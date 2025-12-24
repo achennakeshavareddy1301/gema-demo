@@ -4,6 +4,22 @@ import OverallScore from './OverallScore';
 import SkillCard from './SkillCard';
 import SkillsRadarChart from './SkillsRadarChart';
 
+// Mock data - can be replaced with API call
+const mockReportData = {
+  student_name: "Jeevan Chopra",
+  test_date: "Oct 14, 2025",
+  overall_score: 7,
+  skills: {
+    pronunciation: 8.3,
+    fluency: 9,
+    vocabulary: 6.2,
+    grammar: 6.2
+  }
+};
+
+// API URL - use environment variable or fallback to localhost
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const ReportPage = () => {
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -12,14 +28,17 @@ const ReportPage = () => {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/report');
+        const response = await fetch(`${API_URL}/api/report`);
         if (!response.ok) {
           throw new Error('Failed to fetch report data');
         }
         const data = await response.json();
         setReportData(data);
       } catch (err) {
-        setError(err.message);
+        // Fallback to mock data if API is not available
+        console.log('Using mock data:', err.message);
+        setReportData(mockReportData);
+        setError(null);
       } finally {
         setLoading(false);
       }
